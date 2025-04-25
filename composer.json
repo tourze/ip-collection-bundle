@@ -6,7 +6,7 @@
   "require": {
     "php": "^8.1",
     "nesbot/carbon": "^2.72 || ^3",
-    "doctrine/dbal": "^3.7.0 || ^4.0",
+    "doctrine/dbal": "^4.0",
     "league/uri": "^7.5.1",
     "doctrine/orm": "^2.20 || ^3.0",
     "doctrine/doctrine-bundle": "^2.13",
@@ -34,7 +34,6 @@
   },
   "require-dev": {
     "phpstan/phpstan": "^2.1",
-    "phpunit/phpunit": "^10.0",
-    "shipmonk/composer-dependency-analyser": "^1.8"
+    "phpunit/phpunit": "^10.0"
   }
 }
