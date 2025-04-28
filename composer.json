@@ -23,7 +23,7 @@
     "tourze/doctrine-indexed-bundle": "0.0.*",
     "tourze/doctrine-timestamp-bundle": "0.0.*",
     "tourze/symfony-lock-command-bundle": "0.0.*",
-    "tourze/symfony-cron-job-bundle": "0.0.*",
+    "tourze/symfony-cron-job-bundle": "0.1.*",
     "tourze/doctrine-upsert-bundle": "0.1.*",
     "yiisoft/json": "^1.0"
   },
@@ -35,5 +35,10 @@
   "require-dev": {
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^10.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "IpCollectionBundle\\Tests\\": "tests"
+    }
   }
 }
