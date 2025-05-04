@@ -8,7 +8,7 @@
     "nesbot/carbon": "^2.72 || ^3",
     "doctrine/dbal": "^4.0",
     "league/uri": "^7.5.1",
-    "doctrine/orm": "^2.20 || ^3.0",
+    "doctrine/orm": "^3.0",
     "doctrine/doctrine-bundle": "^2.13",
     "symfony/config": "^6.4",
     "symfony/console": "^6.4",
