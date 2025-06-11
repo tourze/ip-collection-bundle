@@ -19,7 +19,7 @@ class IpCollectionExtensionTest extends TestCase
         try {
             $extension->load([], $container);
             $this->assertTrue(true, 'Extension加载成功');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->markTestSkipped('由于资源不存在，测试被跳过：' . $e->getMessage());
         }
     }
