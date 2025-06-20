@@ -3,6 +3,7 @@
 namespace IpCollectionBundle\Command;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use IpCollectionBundle\Entity\IpTag;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -23,9 +24,10 @@ class SyncAwsIpRangeCommand extends LockableCommand
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly UpsertManager $upsertManager,
-        private readonly HttpClientInterface $httpClient,
-    ) {
+        private readonly UpsertManager          $upsertManager,
+        private readonly HttpClientInterface    $httpClient,
+    )
+    {
         parent::__construct();
     }
 
@@ -59,7 +61,7 @@ class SyncAwsIpRangeCommand extends LockableCommand
         $ip->setAddress($cidr);
         $ip->setTag('aws-ipv4');
         $ip->setValue('1');
-        $ip->setUpdateTime(Carbon::now());
+        $ip->setUpdateTime(CarbonImmutable::now());
         $this->upsertManager->upsert($ip, false);
     }
 
@@ -69,7 +71,7 @@ class SyncAwsIpRangeCommand extends LockableCommand
         $ip->setAddress($cidr);
         $ip->setTag('aws-ipv6');
         $ip->setValue('1');
-        $ip->setUpdateTime(Carbon::now());
+        $ip->setUpdateTime(CarbonImmutable::now());
         $this->upsertManager->upsert($ip, false);
     }
 }

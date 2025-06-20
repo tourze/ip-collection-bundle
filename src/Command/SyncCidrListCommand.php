@@ -3,6 +3,7 @@
 namespace IpCollectionBundle\Command;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use IpCollectionBundle\Entity\IpTag;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -150,7 +151,7 @@ class SyncCidrListCommand extends LockableCommand
     {
         $tags = [];
         foreach ($this->getProviders() as $source => $urlList) {
-                $tags[] = $source;
+            $tags[] = $source;
 
             $text = '';
             foreach ($urlList as $_url) {
@@ -169,7 +170,7 @@ class SyncCidrListCommand extends LockableCommand
                 $ip->setAddress($cidr);
                 $ip->setTag($source);
                 $ip->setValue('1');
-                $ip->setUpdateTime(Carbon::now());
+                $ip->setUpdateTime(CarbonImmutable::now());
                 $this->upsertManager->upsert($ip, false);
             }
         }

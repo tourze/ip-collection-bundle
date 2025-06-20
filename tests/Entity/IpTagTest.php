@@ -27,12 +27,12 @@ class IpTagTest extends TestCase
         $this->assertEquals($value, $ipTag->getValue());
 
         // 测试创建时间
-        $createTime = new \DateTime();
+        $createTime = new \DateTimeImmutable();
         $ipTag->setCreateTime($createTime);
         $this->assertEquals($createTime, $ipTag->getCreateTime());
 
         // 测试更新时间
-        $updateTime = new \DateTime();
+        $updateTime = new \DateTimeImmutable();
         $ipTag->setUpdateTime($updateTime);
         $this->assertEquals($updateTime, $ipTag->getUpdateTime());
 
