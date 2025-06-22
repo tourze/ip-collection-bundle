@@ -27,7 +27,7 @@ class BtTrackerTest extends TestCase
         $this->assertEquals($port, $btTracker->getPort());
 
         // 测试创建时间
-        $createTime = new \DateTime();
+        $createTime = new \DateTimeImmutable();
         $btTracker->setCreateTime($createTime);
         $this->assertEquals($createTime, $btTracker->getCreateTime());
 
@@ -43,6 +43,6 @@ class BtTrackerTest extends TestCase
         $this->assertSame($btTracker, $btTracker->setScheme('https'));
         $this->assertSame($btTracker, $btTracker->setHost('example.org'));
         $this->assertSame($btTracker, $btTracker->setPort(8080));
-        $this->assertSame($btTracker, $btTracker->setCreateTime(new \DateTime()));
+        $this->assertSame($btTracker, $btTracker->setCreateTime(new \DateTimeImmutable()));
     }
 }

@@ -2,7 +2,6 @@
 
 namespace IpCollectionBundle\Command;
 
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use IpCollectionBundle\Entity\IpTag;
@@ -16,7 +15,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
 #[AsCronTask('10 */6 * * *')]
-#[AsCommand(name: SyncCidrListCommand::NAME, description: '同步IP地址信息')]
+#[AsCommand(name: self::NAME, description: '同步IP地址信息')]
 class SyncCidrListCommand extends LockableCommand
 {
     public const NAME = 'game-boost:sync-cidr';
@@ -181,7 +180,7 @@ class SyncCidrListCommand extends LockableCommand
             ->where('a.tag IN (:tags) AND a.value=:value AND a.updateTime<:updateTime')
             ->setParameter('tags', $tags)
             ->setParameter('value', '1')
-            ->setParameter('updateTime', Carbon::now()->subDay())
+            ->setParameter('updateTime', CarbonImmutable::now()->subDay())
             ->getQuery()
             ->execute();
 

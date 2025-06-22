@@ -2,7 +2,6 @@
 
 namespace IpCollectionBundle\Command;
 
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use IpCollectionBundle\Entity\IpTag;
@@ -17,7 +16,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 use Yiisoft\Json\Json;
 
 #[AsCronTask('12 */6 * * *')]
-#[AsCommand(name: SyncAwsIpRangeCommand::NAME, description: '同步AWS-IP地址信息')]
+#[AsCommand(name: self::NAME, description: '同步AWS-IP地址信息')]
 class SyncAwsIpRangeCommand extends LockableCommand
 {
     public const NAME = 'ip-collection:sync-aws-ip-range';
@@ -48,7 +47,7 @@ class SyncAwsIpRangeCommand extends LockableCommand
             ->where('a.tag IN (:tags) AND a.value=:value AND a.updateTime<:updateTime')
             ->setParameter('tags', ['aws-ipv4', 'aws-ipv6'])
             ->setParameter('value', '1')
-            ->setParameter('updateTime', Carbon::now()->subDay())
+            ->setParameter('updateTime', CarbonImmutable::now()->subDay())
             ->getQuery()
             ->execute();
 

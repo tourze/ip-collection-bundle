@@ -13,7 +13,7 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 #[ORM\Entity]
 #[ORM\Table(name: 'ims_ip_tag', options: ['comment' => 'IP标签'])]
 #[ORM\UniqueConstraint(name: 'ims_ip_tag_idx_uniq', columns: ['address', 'tag', 'value'])]
-class IpTag
+class IpTag implements \Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -72,4 +72,10 @@ class IpTag
         $this->value = $value;
 
         return $this;
-    }}
+    }
+
+    public function __toString(): string
+    {
+        return sprintf('%s[%s=%s]', $this->address, $this->tag, $this->value);
+    }
+}

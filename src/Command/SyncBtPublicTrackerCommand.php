@@ -13,9 +13,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
 #[AsCronTask('33 6 * * *')]
-#[AsCommand(name: 'bt:sync-public-tracker', description: '收集公共的Tracker地址')]
+#[AsCommand(name: self::NAME, description: '收集公共的Tracker地址')]
 class SyncBtPublicTrackerCommand extends Command
 {
+    public const NAME = 'bt:sync-public-tracker';
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly EntityManagerInterface $entityManager,

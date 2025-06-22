@@ -8,7 +8,7 @@ use Tourze\DoctrineTimestampBundle\Traits\CreateTimeAware;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'ims_bt_tracker', options: ['comment' => 'BT Tracker'])]
-class BtTracker
+class BtTracker implements \Stringable
 {
     use CreateTimeAware;
 
@@ -17,13 +17,13 @@ class BtTracker
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
     private ?int $id = 0;
 
-    #[ORM\Column(length: 40, nullable: true)]
+    #[ORM\Column(length: 40, nullable: true, options: ['comment' => '协议'])]
     private ?string $scheme = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, options: ['comment' => '主机地址'])]
     private ?string $host = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['comment' => '端口号'])]
     private ?int $port = null;
 
     public function getId(): ?int
@@ -65,5 +65,14 @@ class BtTracker
         $this->port = $port;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        $url = $this->scheme . '://' . $this->host;
+        if ($this->port !== null) {
+            $url .= ':' . $this->port;
+        }
+        return $url;
     }
 }
