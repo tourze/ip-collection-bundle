@@ -15,7 +15,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 use Yiisoft\Json\Json;
 
-#[AsCronTask('12 */6 * * *')]
+#[AsCronTask(expression: '12 */6 * * *')]
 #[AsCommand(name: self::NAME, description: '同步AWS-IP地址信息')]
 class SyncAwsIpRangeCommand extends LockableCommand
 {

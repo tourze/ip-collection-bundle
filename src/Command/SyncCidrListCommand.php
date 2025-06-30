@@ -14,7 +14,7 @@ use Tourze\DoctrineUpsertBundle\Service\UpsertManager;
 use Tourze\LockCommandBundle\Command\LockableCommand;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
-#[AsCronTask('10 */6 * * *')]
+#[AsCronTask(expression: '10 */6 * * *')]
 #[AsCommand(name: self::NAME, description: '同步IP地址信息')]
 class SyncCidrListCommand extends LockableCommand
 {

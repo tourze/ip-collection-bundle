@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
-#[AsCronTask('33 6 * * *')]
+#[AsCronTask(expression: '33 6 * * *')]
 #[AsCommand(name: self::NAME, description: '收集公共的Tracker地址')]
 class SyncBtPublicTrackerCommand extends Command
 {
