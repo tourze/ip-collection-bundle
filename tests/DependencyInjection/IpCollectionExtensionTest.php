@@ -3,24 +3,26 @@
 namespace IpCollectionBundle\Tests\DependencyInjection;
 
 use IpCollectionBundle\DependencyInjection\IpCollectionExtension;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Symfony\Component\DependencyInjection\Extension\Extension;
+use Tourze\PHPUnitSymfonyUnitTest\AbstractDependencyInjectionExtensionTestCase;
 
-class IpCollectionExtensionTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(IpCollectionExtension::class)]
+final class IpCollectionExtensionTest extends AbstractDependencyInjectionExtensionTestCase
 {
-    public function testLoad(): void
+    public function testGetAlias(): void
     {
         $extension = new IpCollectionExtension();
-        $container = new ContainerBuilder();
+        $alias = $extension->getAlias();
+        $this->assertEquals('ip_collection', $alias);
+    }
 
-        // 执行测试
-        // 我们只测试它不会抛出异常，表示功能基本正常
-        // 由于我们没有实际的服务配置文件，因此可能无法完全测试
-        try {
-            $extension->load([], $container);
-            $this->assertTrue(true, 'Extension加载成功');
-        } catch (\Throwable $e) {
-            $this->markTestSkipped('由于资源不存在，测试被跳过：' . $e->getMessage());
-        }
+    public function testExtendsSymfonyExtension(): void
+    {
+        $extension = new IpCollectionExtension();
+        $this->assertInstanceOf(Extension::class, $extension);
     }
 }

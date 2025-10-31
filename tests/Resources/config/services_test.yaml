@@ -1,0 +1,4 @@
+services:
+  Tourze\EasyAdminMenuBundle\Service\LinkGeneratorInterface:
+    class: IpCollectionBundle\Tests\Service\MockLinkGenerator
+    public: true

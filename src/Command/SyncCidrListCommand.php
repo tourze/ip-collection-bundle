@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace IpCollectionBundle\Command;
 
 use Carbon\CarbonImmutable;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use IpCollectionBundle\Entity\IpTag;
+use Monolog\Attribute\WithMonologChannel;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,26 +19,30 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
 #[AsCronTask(expression: '10 */6 * * *')]
-#[AsCommand(name: self::NAME, description: '同步IP地址信息')]
+#[AsCommand(name: 'game-boost:sync-cidr', description: '同步IP地址信息')]
+#[WithMonologChannel(channel: 'ip_collection')]
 class SyncCidrListCommand extends LockableCommand
 {
     public const NAME = 'game-boost:sync-cidr';
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
         private readonly UpsertManager $upsertManager,
         private readonly HttpClientInterface $httpClient,
+        private readonly LoggerInterface $logger,
+        /** @var EntityRepository<IpTag> */
+        private readonly EntityRepository $ipTagRepository,
     ) {
         parent::__construct();
     }
 
     /**
      * 拿开源其他人收集的来做
+     * @return \Traversable<string, string[]>
      */
     private function getProviders(): \Traversable
     {
         yield 'geoip2-cn' => [
-            'https://raw.githubusercontent.com/v03413/GeoIP2-CN/refs/heads/release/China_IP_list.txt'
+            'https://raw.githubusercontent.com/v03413/GeoIP2-CN/refs/heads/release/China_IP_list.txt',
         ];
         yield 'ipip-china' => [
             'https://raw.githubusercontent.com/17mon/china_ip_list/refs/heads/master/china_ip_list.txt',
@@ -151,39 +159,92 @@ class SyncCidrListCommand extends LockableCommand
         $tags = [];
         foreach ($this->getProviders() as $source => $urlList) {
             $tags[] = $source;
+            $this->syncProviderData($source, $urlList);
+        }
 
-            $text = '';
-            foreach ($urlList as $_url) {
-                $text .= "\n" . $this->httpClient->request('GET', $_url)->getContent();
-            }
+        $this->cleanupOldData($tags);
 
-            $text = explode("\n", $text);
-            $text = array_unique($text);
-            foreach ($text as $cidr) {
-                $cidr = trim($cidr);
-                if (empty($cidr)) {
-                    continue;
-                }
+        return Command::SUCCESS;
+    }
 
-                $ip = new IpTag();
-                $ip->setAddress($cidr);
-                $ip->setTag($source);
-                $ip->setValue('1');
-                $ip->setUpdateTime(CarbonImmutable::now());
-                $this->upsertManager->upsert($ip, false);
+    /**
+     * @param string[] $urlList
+     */
+    private function syncProviderData(string $source, array $urlList): void
+    {
+        $text = $this->fetchContentFromUrls($source, $urlList);
+        $this->processAndSaveIpData($source, $text);
+    }
+
+    /**
+     * @param string[] $urlList
+     */
+    private function fetchContentFromUrls(string $source, array $urlList): string
+    {
+        $text = '';
+        foreach ($urlList as $_url) {
+            try {
+                $this->logger->info('开始请求IP地址列表', ['source' => $source, 'url' => $_url]);
+                $startTime = microtime(true);
+                $response = $this->httpClient->request('GET', $_url);
+                $content = $response->getContent();
+                $responseTime = microtime(true) - $startTime;
+
+                $this->logger->info('IP地址列表请求成功', [
+                    'source' => $source,
+                    'url' => $_url,
+                    'response_time' => round($responseTime * 1000, 2) . 'ms',
+                    'content_length' => strlen($content),
+                ]);
+
+                $text .= "\n" . $content;
+            } catch (\Exception $e) {
+                $this->logger->error('IP地址列表请求失败', [
+                    'source' => $source,
+                    'url' => $_url,
+                    'error' => $e->getMessage(),
+                    'exception' => get_class($e),
+                ]);
+                throw $e;
             }
         }
 
+        return $text;
+    }
+
+    private function processAndSaveIpData(string $source, string $text): void
+    {
+        $text = explode("\n", $text);
+        $text = array_unique($text);
+        foreach ($text as $cidr) {
+            $cidr = trim($cidr);
+            if ('' === $cidr) {
+                continue;
+            }
+
+            $ip = new IpTag();
+            $ip->setAddress($cidr);
+            $ip->setTag($source);
+            $ip->setValue('1');
+            $ip->setUpdateTime(CarbonImmutable::now());
+            $this->upsertManager->upsert($ip);
+        }
+    }
+
+    /**
+     * @param string[] $tags
+     */
+    private function cleanupOldData(array $tags): void
+    {
         // 这里要去除那些不会再用到的IP
-        $this->entityManager->createQueryBuilder()
-            ->delete(IpTag::class, 'a')
+        $this->ipTagRepository->createQueryBuilder('a')
+            ->delete()
             ->where('a.tag IN (:tags) AND a.value=:value AND a.updateTime<:updateTime')
             ->setParameter('tags', $tags)
             ->setParameter('value', '1')
             ->setParameter('updateTime', CarbonImmutable::now()->subDay())
             ->getQuery()
-            ->execute();
-
-        return Command::SUCCESS;
+            ->execute()
+        ;
     }
 }

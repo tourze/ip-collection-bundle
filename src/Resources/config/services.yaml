@@ -11,3 +11,32 @@ services:
     resource: '../../EventSubscriber/'
   IpCollectionBundle\Service\:
     resource: '../../Service/'
+  IpCollectionBundle\Controller\:
+    resource: '../../Controller/'
+    tags: ['controller.service_arguments']
+
+  # Repository services for dependency injection
+  # IpTag Repository
+  ipTag.repository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.entity_manager', 'getRepository']
+    arguments: ['IpCollectionBundle\Entity\IpTag']
+
+  # BtTracker Repository
+  btTracker.repository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.entity_manager', 'getRepository']
+    arguments: ['IpCollectionBundle\Entity\BtTracker']
+
+  # Command services with explicit repository injection
+  IpCollectionBundle\Command\SyncAwsIpRangeCommand:
+    arguments:
+      $ipTagRepository: '@ipTag.repository'
+
+  IpCollectionBundle\Command\SyncCidrListCommand:
+    arguments:
+      $ipTagRepository: '@ipTag.repository'
+
+  IpCollectionBundle\Command\SyncBtPublicTrackerCommand:
+    arguments:
+      $btTrackerRepository: '@btTracker.repository'

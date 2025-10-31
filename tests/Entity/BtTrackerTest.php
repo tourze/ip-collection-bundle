@@ -3,46 +3,60 @@
 namespace IpCollectionBundle\Tests\Entity;
 
 use IpCollectionBundle\Entity\BtTracker;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 
-class BtTrackerTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(BtTracker::class)]
+final class BtTrackerTest extends AbstractEntityTestCase
 {
-    public function testGettersAndSetters(): void
+    public function testToStringShouldReturnTrackerUrl(): void
     {
         $btTracker = new BtTracker();
+        $btTracker->setScheme('https');
+        $btTracker->setHost('tracker.example.com');
+        $btTracker->setPort(6969);
 
-        // 测试 scheme
-        $scheme = 'http';
-        $btTracker->setScheme($scheme);
-        $this->assertEquals($scheme, $btTracker->getScheme());
-
-        // 测试 host
-        $host = 'tracker.example.com';
-        $btTracker->setHost($host);
-        $this->assertEquals($host, $btTracker->getHost());
-
-        // 测试 port
-        $port = 6969;
-        $btTracker->setPort($port);
-        $this->assertEquals($port, $btTracker->getPort());
-
-        // 测试创建时间
-        $createTime = new \DateTimeImmutable();
-        $btTracker->setCreateTime($createTime);
-        $this->assertEquals($createTime, $btTracker->getCreateTime());
-
-        // 测试ID获取方法
-        $this->assertEquals(0, $btTracker->getId()); // 默认值是0，不是null
+        $this->assertEquals('https://tracker.example.com:6969', (string) $btTracker);
     }
 
-    public function testFluentInterface(): void
+    public function testToStringWithoutPortShouldReturnTrackerUrl(): void
     {
         $btTracker = new BtTracker();
+        $btTracker->setScheme('http');
+        $btTracker->setHost('tracker.example.com');
 
-        // 验证setter方法是否返回$this以支持流式接口
-        $this->assertSame($btTracker, $btTracker->setScheme('https'));
-        $this->assertSame($btTracker, $btTracker->setHost('example.org'));
-        $this->assertSame($btTracker, $btTracker->setPort(8080));
-        $this->assertSame($btTracker, $btTracker->setCreateTime(new \DateTimeImmutable()));
+        $this->assertEquals('http://tracker.example.com', (string) $btTracker);
+    }
+
+    public function testToStringWithNullSchemeShouldReturnTrackerUrl(): void
+    {
+        $btTracker = new BtTracker();
+        $btTracker->setHost('tracker.example.com');
+
+        $this->assertEquals('tracker.example.com', (string) $btTracker);
+    }
+
+    /**
+     * 创建被测实体的一个实例.
+     */
+    protected function createEntity(): object
+    {
+        return new BtTracker();
+    }
+
+    /**
+     * 提供属性及其样本值的 Data Provider.
+     *
+     * @return iterable<string, array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
+    {
+        yield 'scheme' => ['scheme', 'https'];
+        yield 'host' => ['host', 'tracker.example.com'];
+        yield 'port' => ['port', 6969];
+        yield 'createTime' => ['createTime', new \DateTimeImmutable('2023-01-01 12:00:00')];
     }
 }

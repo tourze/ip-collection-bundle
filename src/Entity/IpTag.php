@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace IpCollectionBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -16,24 +19,31 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 class IpTag implements \Stringable
 {
     use TimestampableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = 0;
+    private int $id = 0;
 
     #[IndexColumn]
     #[ORM\Column(length: 60, options: ['comment' => 'IP地址'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 60)]
     private string $address;
 
     #[IndexColumn]
     #[ORM\Column(length: 60, options: ['comment' => '标签'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 60)]
     private string $tag;
 
     #[IndexColumn]
     #[ORM\Column(length: 64, options: ['comment' => '值'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     private string $value;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -43,11 +53,9 @@ class IpTag implements \Stringable
         return $this->address;
     }
 
-    public function setAddress(string $address): static
+    public function setAddress(string $address): void
     {
         $this->address = $address;
-
-        return $this;
     }
 
     public function getTag(): string
@@ -55,11 +63,9 @@ class IpTag implements \Stringable
         return $this->tag;
     }
 
-    public function setTag(string $tag): static
+    public function setTag(string $tag): void
     {
         $this->tag = $tag;
-
-        return $this;
     }
 
     public function getValue(): string
@@ -67,11 +73,9 @@ class IpTag implements \Stringable
         return $this->value;
     }
 
-    public function setValue(string $value): static
+    public function setValue(string $value): void
     {
         $this->value = $value;
-
-        return $this;
     }
 
     public function __toString(): string

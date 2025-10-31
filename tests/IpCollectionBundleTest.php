@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace IpCollectionBundle\Tests;
 
 use IpCollectionBundle\IpCollectionBundle;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractBundleTestCase;
 
-class IpCollectionBundleTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(IpCollectionBundle::class)]
+#[RunTestsInSeparateProcesses]
+final class IpCollectionBundleTest extends AbstractBundleTestCase
 {
-    public function testBundleExtends(): void
-    {
-        $bundle = new IpCollectionBundle();
-        $this->assertInstanceOf(Bundle::class, $bundle);
-    }
 }

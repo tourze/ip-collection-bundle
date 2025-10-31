@@ -3,50 +3,44 @@
 namespace IpCollectionBundle\Tests\Entity;
 
 use IpCollectionBundle\Entity\IpTag;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 
-class IpTagTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(IpTag::class)]
+final class IpTagTest extends AbstractEntityTestCase
 {
-    public function testGettersAndSetters(): void
+    public function testToStringShouldReturnFormattedString(): void
     {
         $ipTag = new IpTag();
+        $ipTag->setAddress('192.168.1.1');
+        $ipTag->setTag('location');
+        $ipTag->setValue('office');
 
-        // 测试地址
-        $address = '192.168.1.1';
-        $ipTag->setAddress($address);
-        $this->assertEquals($address, $ipTag->getAddress());
-
-        // 测试标签
-        $tag = 'test-tag';
-        $ipTag->setTag($tag);
-        $this->assertEquals($tag, $ipTag->getTag());
-
-        // 测试值
-        $value = 'test-value';
-        $ipTag->setValue($value);
-        $this->assertEquals($value, $ipTag->getValue());
-
-        // 测试创建时间
-        $createTime = new \DateTimeImmutable();
-        $ipTag->setCreateTime($createTime);
-        $this->assertEquals($createTime, $ipTag->getCreateTime());
-
-        // 测试更新时间
-        $updateTime = new \DateTimeImmutable();
-        $ipTag->setUpdateTime($updateTime);
-        $this->assertEquals($updateTime, $ipTag->getUpdateTime());
-
-        // 测试ID获取方法
-        $this->assertEquals(0, $ipTag->getId()); // 默认值是0，不是null
+        $this->assertEquals('192.168.1.1[location=office]', (string) $ipTag);
     }
 
-    public function testFluentInterface(): void
+    /**
+     * 创建被测实体的一个实例.
+     */
+    protected function createEntity(): object
     {
-        $ipTag = new IpTag();
+        return new IpTag();
+    }
 
-        // 验证setter方法是否返回$this以支持流式接口
-        $this->assertSame($ipTag, $ipTag->setAddress('127.0.0.1'));
-        $this->assertSame($ipTag, $ipTag->setTag('test'));
-        $this->assertSame($ipTag, $ipTag->setValue('1'));
+    /**
+     * 提供属性及其样本值的 Data Provider.
+     *
+     * @return iterable<string, array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
+    {
+        yield 'address' => ['address', '192.168.1.1'];
+        yield 'tag' => ['tag', 'location'];
+        yield 'value' => ['value', 'office'];
+        yield 'createTime' => ['createTime', new \DateTimeImmutable('2023-01-01 12:00:00')];
+        yield 'updateTime' => ['updateTime', new \DateTimeImmutable('2023-01-01 13:00:00')];
     }
 }
