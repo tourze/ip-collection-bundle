@@ -28,10 +28,10 @@
     "tourze/bundle-dependency": "1.*",
     "tourze/doctrine-indexed-bundle": "1.0.*",
     "tourze/doctrine-timestamp-bundle": "1.0.*",
-    "tourze/doctrine-upsert-bundle": "0.1.*",
+    "tourze/doctrine-upsert-bundle": "1.0.*",
     "tourze/symfony-cron-job-bundle": "1.0.*",
     "tourze/symfony-dependency-service-loader": "1.*",
-    "tourze/symfony-lock-command-bundle": "0.0.*",
+    "tourze/symfony-lock-command-bundle": "1.0.*",
     "yiisoft/json": "^1.0"
   },
   "require-dev": {
