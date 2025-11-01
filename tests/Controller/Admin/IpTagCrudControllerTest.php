@@ -72,8 +72,7 @@ final class IpTagCrudControllerTest extends AbstractEasyAdminControllerTestCase
 
     public function testIndexPage(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
         $crawler = $client->request('GET', '/admin');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
@@ -87,8 +86,7 @@ final class IpTagCrudControllerTest extends AbstractEasyAdminControllerTestCase
 
     public function testCreateIpTag(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
         $client->request('GET', '/admin');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
@@ -177,8 +175,7 @@ final class IpTagCrudControllerTest extends AbstractEasyAdminControllerTestCase
 
     public function testValidationErrors(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 创建一个不完整的实体来测试验证
         $ipTag = new IpTag();
