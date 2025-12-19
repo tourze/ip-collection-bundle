@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace IpCollectionBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use IpCollectionBundle\Entity\BtTracker;
 use League\Uri\Uri;
 use Monolog\Attribute\WithMonologChannel;
@@ -20,7 +19,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 #[AsCronTask(expression: '33 6 * * *')]
 #[AsCommand(name: 'bt:sync-public-tracker', description: '收集公共的Tracker地址')]
 #[WithMonologChannel(channel: 'ip_collection')]
-class SyncBtPublicTrackerCommand extends Command
+final class SyncBtPublicTrackerCommand extends Command
 {
     public const NAME = 'bt:sync-public-tracker';
 
@@ -28,8 +27,6 @@ class SyncBtPublicTrackerCommand extends Command
         private readonly HttpClientInterface $httpClient,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
-        /** @var EntityRepository<BtTracker> */
-        private readonly EntityRepository $btTrackerRepository,
     ) {
         parent::__construct();
     }
@@ -62,7 +59,8 @@ class SyncBtPublicTrackerCommand extends Command
 
         $this->entityManager->wrapInTransaction(function () use ($trackers): void {
             // 先删除所有，再重新添加
-            $this->btTrackerRepository->createQueryBuilder('a')
+            $this->entityManager->getRepository(BtTracker::class)
+                ->createQueryBuilder('a')
                 ->delete()
                 ->getQuery()
                 ->execute()

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace IpCollectionBundle\Command;
 
 use Carbon\CarbonImmutable;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use IpCollectionBundle\Entity\IpTag;
 use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
@@ -22,7 +22,7 @@ use Yiisoft\Json\Json;
 #[AsCronTask(expression: '12 */6 * * *')]
 #[AsCommand(name: 'ip-collection:sync-aws-ip-range', description: '同步AWS-IP地址信息')]
 #[WithMonologChannel(channel: 'ip_collection')]
-class SyncAwsIpRangeCommand extends LockableCommand
+final class SyncAwsIpRangeCommand extends LockableCommand
 {
     public const NAME = 'ip-collection:sync-aws-ip-range';
 
@@ -30,8 +30,7 @@ class SyncAwsIpRangeCommand extends LockableCommand
         private readonly UpsertManager $upsertManager,
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
-        /** @var EntityRepository<IpTag> */
-        private readonly EntityRepository $ipTagRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -78,7 +77,8 @@ class SyncAwsIpRangeCommand extends LockableCommand
         }
 
         // 这里要去除那些不会再用到的IP
-        $this->ipTagRepository->createQueryBuilder('a')
+        $this->entityManager->getRepository(IpTag::class)
+            ->createQueryBuilder('a')
             ->delete()
             ->where('a.tag IN (:tags) AND a.value=:value AND a.updateTime<:updateTime')
             ->setParameter('tags', ['aws-ipv4', 'aws-ipv6'])

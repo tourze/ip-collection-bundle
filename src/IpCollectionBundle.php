@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tourze\BundleDependency\BundleDependencyInterface;
 use Tourze\DoctrineUpsertBundle\DoctrineUpsertBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 use Tourze\Symfony\CronJob\CronJobBundle;
 
 class IpCollectionBundle extends Bundle implements BundleDependencyInterface
@@ -18,6 +19,7 @@ class IpCollectionBundle extends Bundle implements BundleDependencyInterface
             DoctrineBundle::class => ['all' => true],
             DoctrineUpsertBundle::class => ['all' => true],
             CronJobBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
     }
 }

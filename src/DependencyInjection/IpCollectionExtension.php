@@ -6,7 +6,7 @@ namespace IpCollectionBundle\DependencyInjection;
 
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class IpCollectionExtension extends AutoExtension
+final class IpCollectionExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {

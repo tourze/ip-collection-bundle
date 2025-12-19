@@ -3,40 +3,17 @@ services:
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    public: false
 
-  # 如果确认要使用自动扫描、自动注册，建议尽可能将要扫描的目录路径收缩，不要设置那么大的范围
-  IpCollectionBundle\Command\:
-    resource: '../../Command/'
-  IpCollectionBundle\EventSubscriber\:
-    resource: '../../EventSubscriber/'
-  IpCollectionBundle\Service\:
-    resource: '../../Service/'
   IpCollectionBundle\Controller\:
     resource: '../../Controller/'
     tags: ['controller.service_arguments']
-
-  # Repository services for dependency injection
-  # IpTag Repository
-  ipTag.repository:
-    class: Doctrine\ORM\EntityRepository
-    factory: ['@doctrine.orm.entity_manager', 'getRepository']
-    arguments: ['IpCollectionBundle\Entity\IpTag']
-
-  # BtTracker Repository
-  btTracker.repository:
-    class: Doctrine\ORM\EntityRepository
-    factory: ['@doctrine.orm.entity_manager', 'getRepository']
-    arguments: ['IpCollectionBundle\Entity\BtTracker']
-
-  # Command services with explicit repository injection
-  IpCollectionBundle\Command\SyncAwsIpRangeCommand:
-    arguments:
-      $ipTagRepository: '@ipTag.repository'
-
-  IpCollectionBundle\Command\SyncCidrListCommand:
-    arguments:
-      $ipTagRepository: '@ipTag.repository'
-
-  IpCollectionBundle\Command\SyncBtPublicTrackerCommand:
-    arguments:
-      $btTrackerRepository: '@btTracker.repository'
+  IpCollectionBundle\Service\:
+    resource: '../../Service/'
+    public: true
+  IpCollectionBundle\EventSubscriber\:
+    resource: '../../EventSubscriber/'
+    public: true
+  IpCollectionBundle\Command\:
+    resource: '../../Command/'
+    public: true

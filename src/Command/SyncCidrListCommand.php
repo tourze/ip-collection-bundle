@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace IpCollectionBundle\Command;
 
 use Carbon\CarbonImmutable;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use IpCollectionBundle\Entity\IpTag;
 use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
@@ -21,7 +21,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 #[AsCronTask(expression: '10 */6 * * *')]
 #[AsCommand(name: 'game-boost:sync-cidr', description: '同步IP地址信息')]
 #[WithMonologChannel(channel: 'ip_collection')]
-class SyncCidrListCommand extends LockableCommand
+final class SyncCidrListCommand extends LockableCommand
 {
     public const NAME = 'game-boost:sync-cidr';
 
@@ -29,8 +29,7 @@ class SyncCidrListCommand extends LockableCommand
         private readonly UpsertManager $upsertManager,
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
-        /** @var EntityRepository<IpTag> */
-        private readonly EntityRepository $ipTagRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -237,7 +236,8 @@ class SyncCidrListCommand extends LockableCommand
     private function cleanupOldData(array $tags): void
     {
         // 这里要去除那些不会再用到的IP
-        $this->ipTagRepository->createQueryBuilder('a')
+        $this->entityManager->getRepository(IpTag::class)
+            ->createQueryBuilder('a')
             ->delete()
             ->where('a.tag IN (:tags) AND a.value=:value AND a.updateTime<:updateTime')
             ->setParameter('tags', $tags)

@@ -8,7 +8,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use IpCollectionBundle\Entity\BtTracker;
 
-class BtTrackerFixtures extends Fixture
+final class BtTrackerFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
